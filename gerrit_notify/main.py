@@ -18,7 +18,7 @@ class TrayiconPlugin (GObject.Object):
         self.staticon.set_visible (True)
 
     def trayicon_activate (self, widget, data = None):
-        for c in self.notify.incoming_changes():
+        for c in self.notify.open_changes():
             print(c.change_id)
 
     def trayicon_quit (self, widget, data = None):

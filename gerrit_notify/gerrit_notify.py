@@ -22,13 +22,19 @@ class GerritNotify(object):
             self.endpoint += 'a/' #prefix for authenticated access
             self.auth = HTTPDigestAuth(username, password)
 
-
+    def open_changes(self):
+        query = '?q=status:open'
+        return self.changes(query)
 
     def incoming_changes(self):
-        query = '?q=status:open'
+        query = '?q=status:open+reviewer:self'
+        return self.changes(query)
+
+    def changes(self, query):
         uri = self.endpoint + 'changes/' + query
         resp = requests.get(uri, auth=self.auth)
         if resp.ok:
+            #we skip the first line, because Gerrit includes a XSSI prevention prefix there
             return [Change(d) for d in json.loads(resp.text[resp.text.find('\n'):])]
         else:
             raise BadRequest("Failed to fetch incoming changes (%d: %s)" %
