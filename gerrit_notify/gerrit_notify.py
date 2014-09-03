@@ -20,7 +20,7 @@ class GerritNotify(object):
         self.auth = None
         if username and password:
             self.endpoint += 'a/' #prefix for authenticated access
-            self.auth = HTTPDigestAuth("alofgren", "/P4ODk67pGp0")
+            self.auth = HTTPDigestAuth(username, password)
 
 
 
