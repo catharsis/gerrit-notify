@@ -1,4 +1,3 @@
-#!/usr/bin/python2
 #coding=utf-8
 from setuptools import setup, find_packages
 from subprocess import check_output
@@ -19,7 +18,7 @@ setup(
 		install_requires = open('requirements.txt').read().split('\n'),
 		entry_points = {
 			'console_scripts': [
-				'gerrit-notify = gerrit_notify.gerrit_notify:main',
+				'gerrit-notify = gerrit_notify.main:main',
 				],
 			}
-		)
+                )
