@@ -32,7 +32,9 @@ class GerritNotify(object):
 
     def changes(self, query):
         uri = self.endpoint + 'changes/' + query
-        resp = requests.get(uri, auth=self.auth)
+        resp = requests.get(uri, auth=self.auth,
+                headers={'Accept': 'application/json'} # have Gerrit send compacted JSON, gotta preserve those bytes
+                )
         if resp.ok:
             #we skip the first line, because Gerrit includes a XSSI prevention prefix there
             return [Change(d) for d in json.loads(resp.text[resp.text.find('\n'):])]
