@@ -18,8 +18,7 @@ class TrayiconPlugin (GObject.Object):
         self.staticon.set_visible (True)
 
     def trayicon_activate (self, widget, data = None):
-        for c in self.notify.open_changes():
-            print(c.change_id)
+        pass
 
     def trayicon_quit (self, widget, data = None):
         Gtk.main_quit()
@@ -27,13 +26,13 @@ class TrayiconPlugin (GObject.Object):
     def trayicon_popup (self, widget, button, time, data = None):
         self.menu = Gtk.Menu ()
 
-        menuitem_toggle = Gtk.MenuItem ("Show / Hide")
         menuitem_quit = Gtk.MenuItem ("Quit")
+        for c in self.notify.incoming_changes():
+            menutitem_change = Gtk.MenuItem (str(c))
+            self.menu.append(menutitem_change)
 
-        menuitem_toggle.connect ("activate", self.trayicon_activate)
         menuitem_quit.connect ("activate", self.trayicon_quit)
 
-        self.menu.append (menuitem_toggle)
         self.menu.append (menuitem_quit)
 
         self.menu.show_all ()

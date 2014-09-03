@@ -1,6 +1,7 @@
 from requests.auth import HTTPDigestAuth
 import requests
 import json
+class BadRequest(Exception): pass
 class Change(object):
     def __init__(self, json):
         self.fields = dict(json)
@@ -12,7 +13,7 @@ class Change(object):
             return None
 
     def __str__(self):
-        return str(self.fields)
+        return "%s... (%s)" % (self.subject[:15], self.project)
 
 class GerritNotify(object):
     def __init__(self, url, username = None, password = None):
