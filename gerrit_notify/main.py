@@ -5,16 +5,13 @@ from os.path import expanduser
 from ConfigParser import SafeConfigParser
 
 class TrayiconPlugin (GObject.Object):
-    __gtype_name__ = 'TrayiconPlugin'
-
-    object = GObject.property (type=GObject.Object)
     notify = None
     def do_activate (self, notify):
         self.notify = notify
-        self.staticon = Gtk.StatusIcon ()
-        self.staticon.set_from_stock (Gtk.STOCK_ABOUT)
+        self.staticon = Gtk.StatusIcon.new_from_file(self.notify.icon)
         self.staticon.connect ("activate", self.trayicon_activate)
         self.staticon.connect ("popup_menu", self.trayicon_popup)
+        self.staticon.set_tooltip_markup("<span font_size='small'>Gerrit Notifier</span>")
         self.staticon.set_visible (True)
 
     def trayicon_activate (self, widget, data = None):
@@ -27,7 +24,7 @@ class TrayiconPlugin (GObject.Object):
         self.menu = Gtk.Menu ()
 
         menuitem_quit = Gtk.MenuItem ("Quit")
-        for c in self.notify.incoming_changes():
+        for c in self.notify.open_changes():
             menutitem_change = Gtk.MenuItem (str(c))
             self.menu.append(menutitem_change)
 

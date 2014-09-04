@@ -1,4 +1,6 @@
 from requests.auth import HTTPDigestAuth
+from os import makedirs
+from os.path import expanduser, exists, join
 import requests
 import json
 class BadRequest(Exception): pass
@@ -16,12 +18,20 @@ class Change(object):
         return "%s... (%s)" % (self.subject[:15], self.project)
 
 class GerritNotify(object):
+    _cache_dir = expanduser('~/.cache/gerrit-notify')
+    _icon_path = join(_cache_dir, 'icon')
+
     def __init__(self, url, username = None, password = None):
-        self.endpoint = url + "/"
+        self.url = url
+        self.endpoint = self.url + "/"
         self.auth = None
         if username and password:
             self.endpoint += 'a/' #prefix for authenticated access
             self.auth = HTTPDigestAuth(username, password)
+
+        if not exists(self._cache_dir):
+            makedirs(self._cache_dir)
+
 
     def open_changes(self):
         query = '?q=status:open'
@@ -42,3 +52,13 @@ class GerritNotify(object):
         else:
             raise BadRequest("Failed to fetch incoming changes (%d: %s)" %
                     (resp.status_code, resp.reason))
+
+    @property
+    def icon(self):
+        iconfile = self._icon_path
+        if not exists(iconfile):
+            resp = requests.get(self.url + '/' + 'favicon.ico')
+            icondata = resp.content
+            with open(iconfile, 'wb') as f:
+                f.write(icondata)
+        return iconfile
