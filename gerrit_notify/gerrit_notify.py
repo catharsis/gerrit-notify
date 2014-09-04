@@ -8,6 +8,17 @@ class Change(object):
     def __init__(self, json):
         self.fields = dict(json)
 
+    def shorten_string(self, s, l=15, reverse=False):
+        cut = "..."
+        l = l - len(cut)
+        if len(s) > l:
+            if reverse:
+                return cut + s[len(s) - l:]
+            else:
+                return s[:l] + cut
+        else:
+            return s
+
     def __getattr__(self, name):
         if name in self.fields:
             return self.fields[name]
@@ -15,7 +26,10 @@ class Change(object):
             return None
 
     def __str__(self):
-        return "%s... (%s)" % (self.subject[:15], self.project)
+        return "%s (%s)" % (
+                self.shorten_string(self.subject),
+                self.shorten_string(self.project, reverse=True)
+                )
 
 class GerritNotify(object):
     _cache_dir = expanduser('~/.cache/gerrit-notify')
