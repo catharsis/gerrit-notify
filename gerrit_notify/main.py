@@ -22,11 +22,26 @@ class TrayiconPlugin (GObject.Object):
 
     def trayicon_popup (self, widget, button, time, data = None):
         self.menu = Gtk.Menu ()
-
+        incoming_menu = Gtk.Menu ()
+        open_menu = Gtk.Menu ()
         menuitem_quit = Gtk.MenuItem ("Quit")
+        menuitem_incoming = Gtk.MenuItem ("Incoming changes")
+        menuitem_open = Gtk.MenuItem ("Open changes")
+
+        menuitem_incoming.set_submenu(incoming_menu)
+        menuitem_open.set_submenu(open_menu)
+
+        for c in self.notify.incoming_changes():
+            menutitem_change = Gtk.MenuItem (str(c))
+            incoming_menu.append(menutitem_change)
+
         for c in self.notify.open_changes():
             menutitem_change = Gtk.MenuItem (str(c))
-            self.menu.append(menutitem_change)
+            open_menu.append(menutitem_change)
+
+        self.menu.append(menuitem_incoming)
+        self.menu.append(menuitem_open)
+
 
         menuitem_quit.connect ("activate", self.trayicon_quit)
 
