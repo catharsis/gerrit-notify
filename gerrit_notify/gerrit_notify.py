@@ -52,7 +52,11 @@ class GerritNotify(object):
         return self.changes(query)
 
     def incoming_changes(self):
-        query = '?q=status:open+reviewer:self'
+        query = '?q=status:open+reviewer:self+-owner:self'
+        return self.changes(query)
+
+    def outgoing_changes(self):
+        query = '?q=status:open+owner:self'
         return self.changes(query)
 
     def changes(self, query):
