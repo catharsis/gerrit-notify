@@ -5,10 +5,11 @@ import requests
 import json
 class BadRequest(Exception): pass
 class Change(object):
-    def __init__(self, json):
+    def __init__(self, url_prefix, json):
+        self.url_prefix = url_prefix
         self.fields = dict(json)
 
-    def shorten_string(self, s, l=15, reverse=False):
+    def shorten_string(self, s, l=45, reverse=False):
         cut = "..."
         l = l - len(cut)
         if len(s) > l:
@@ -18,6 +19,9 @@ class Change(object):
                 return s[:l] + cut
         else:
             return s
+
+    def permalink(self):
+        return self.url_prefix + str(self.fields["_number"])
 
     def __getattr__(self, name):
         if name in self.fields:
@@ -66,7 +70,7 @@ class GerritNotify(object):
                 )
         if resp.ok:
             #we skip the first line, because Gerrit includes a XSSI prevention prefix there
-            return [Change(d) for d in json.loads(resp.text[resp.text.find('\n'):])]
+            return [Change(self.url + '#/c/', d) for d in json.loads(resp.text[resp.text.find('\n'):])]
         else:
             raise BadRequest("Failed to fetch incoming changes (%d: %s)" %
                     (resp.status_code, resp.reason))

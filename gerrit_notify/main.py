@@ -2,6 +2,7 @@
 from gerrit_notify import GerritNotify
 from gi.repository import GObject,  Gtk
 from os.path import expanduser
+import subprocess
 from ConfigParser import SafeConfigParser
 
 class TrayiconPlugin (GObject.Object):
@@ -29,12 +30,16 @@ class TrayiconPlugin (GObject.Object):
 
         for c in changes:
             menutitem_change = Gtk.MenuItem (str(c))
+            menutitem_change.connect("activate", self.change_clicked, c)
             menu.append(menutitem_change)
 
     def new_change_menuitem(self, name, populator_func):
         new_menuitem = Gtk.MenuItem(name)
         self.populate_menuitem_submenu(new_menuitem, populator_func())
         return new_menuitem
+
+    def change_clicked(self, widget, change = None):
+        subprocess.Popen(["xdg-open", change.permalink()])
 
     def trayicon_popup (self, widget, button, time, data = None):
         self.menu = Gtk.Menu ()
@@ -56,6 +61,7 @@ class TrayiconPlugin (GObject.Object):
         del self.staticon
 
 def main():
+    # add a 'Settings' menu item to edit these values
     default_config = {
             'url': 'http://update-your-settings.net',
             'username': None,
