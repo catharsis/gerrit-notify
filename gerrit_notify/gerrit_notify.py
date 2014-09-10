@@ -8,7 +8,7 @@ class Change(object):
     def __init__(self, json):
         self.fields = dict(json)
 
-    def shorten_string(self, s, l=15, reverse=False):
+    def shorten_string(self, s, l=45, reverse=False):
         cut = "..."
         l = l - len(cut)
         if len(s) > l:
